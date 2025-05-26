@@ -1,0 +1,25 @@
+{
+  "name": "temprepo",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "parcel ./src/index.html",
+    "build": "parcel build ./src/index.html --dist-dir docs --public-url ./",
+    "clean": "del-cli ./.parcel-cache ./docs ./dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "del-cli": "^6.0.0",
+    "parcel": "^2.14.4",
+    "process": "^0.11.10"
+  },
+  "dependencies": {
+    "animejs": "^4.0.2",
+    "firebase": "^11.7.1",
+    "lodash": "^4.17.21",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}
