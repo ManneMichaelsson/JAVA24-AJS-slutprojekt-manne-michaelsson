@@ -1,3 +1,4 @@
+//Imports
 import React, { useState, useEffect } from 'react';
 import { database } from './firebase/firebase';
 import { ref, onValue, push, update, remove } from "firebase/database";
@@ -6,10 +7,12 @@ import MemberForm from './components/MemberForm';
 import AssignmentList from './components/AssignmentList';
 import MemberList from './components/MemberList';
 
+
 function App() {
   const [members, setMembers] = useState([]);
   const [assignments, setAssignments] = useState([]);
 
+  //hämta assignments från databsen
   useEffect(() => {
     const assignmentsRef = ref(database, 'assignments');
     onValue(assignmentsRef, (snapshot) => {

@@ -1,17 +1,19 @@
 {
   "name": "temprepo",
   "version": "1.0.0",
+  "homepage": "https://mannemichaelsson.github.io/JAVA24-AJS-slutprojekt-manne-michaelsson/",
   "scripts": {
-    "dev": "parcel ./src/index.html",
-    "build": "parcel build ./src/index.html --dist-dir docs --public-url ./",
-    "clean": "del-cli ./.parcel-cache ./docs ./dist"
-  },
+  "build": "parcel build ./src/index.html --dist-dir dist --public-url ./",
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d dist"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
     "del-cli": "^6.0.0",
+    "gh-pages": "^6.3.0",
     "parcel": "^2.14.4",
     "process": "^0.11.10"
   },
