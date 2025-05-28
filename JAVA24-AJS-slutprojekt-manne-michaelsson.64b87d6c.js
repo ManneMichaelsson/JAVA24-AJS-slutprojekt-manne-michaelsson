@@ -16129,24 +16129,32 @@ function App() {
     const [assignments, setAssignments] = (0, _react.useState)([]);
     //hämta assignments från databsen
     (0, _react.useEffect)(()=>{
+        //referens till plats "assignments" i databasen
         const assignmentsRef = (0, _database.ref)((0, _firebase.database), 'assignments');
+        //lyssnar på förändring i databasen
         (0, _database.onValue)(assignmentsRef, (snapshot)=>{
+            //hämtar en snapshot av "assignments" i databsen och sparar i data
             const data = snapshot.val();
+            //gör om data till en array i grupp [ID, objeket i databasen], om data är tom så skapas en tom array
             const assignmentsList = data ? Object.entries(data).map(([id, val])=>({
                     id,
                     ...val
                 })) : [];
+            //Uppdaterar state med listan så att de visas på hemsidan
             setAssignments(assignmentsList);
         });
     }, []);
+    //Metod för att lägga till en ny uppgift i databasen. 
     const handleAddAssignment = (assignment)=>{
         const assignmentsRef = (0, _database.ref)((0, _firebase.database), 'assignments');
-        (0, _database.push)(assignmentsRef, assignment).then(()=>console.log('Uppgift tillagd!')).catch((error)=>console.error("Fel vid till\xe4gg:", error));
+        (0, _database.push)(assignmentsRef, assignment).then(()=>console.log('Uppgift tillagd')).catch((error)=>console.error("Fel vid till\xe4gg:", error));
     };
+    //Metod för att uppdatera en uppgift i databasen. 
     const handleUpdateAssignment = (id, updatedFields)=>{
         const assignmentRef = (0, _database.ref)((0, _firebase.database), `assignments/${id}`);
         (0, _database.update)(assignmentRef, updatedFields).then(()=>console.log("Uppgift uppdaterad!")).catch((error)=>console.error("Fel vid uppdatering:", error));
     };
+    //tar bort en uppgift i databasen
     const deleteAssignment = (id)=>{
         const assignmentRef = (0, _database.ref)((0, _firebase.database), `assignments/${id}`);
         (0, _database.remove)(assignmentRef).then(()=>console.log("Uppgiften raderad!")).catch((error)=>console.error("Fel vid radering av uppgift.", error));
@@ -16160,7 +16168,7 @@ function App() {
                         children: "L\xe4gg till uppgift:"
                     }, void 0, false, {
                         fileName: "src/App.jsx",
-                        lineNumber: 49,
+                        lineNumber: 57,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _assignmentFormDefault.default), {
@@ -16168,13 +16176,13 @@ function App() {
                         onAddAssignment: handleAddAssignment
                     }, void 0, false, {
                         fileName: "src/App.jsx",
-                        lineNumber: 50,
+                        lineNumber: 58,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/App.jsx",
-                lineNumber: 48,
+                lineNumber: 56,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -16184,26 +16192,25 @@ function App() {
                         children: "L\xe4gg till medlem:"
                     }, void 0, false, {
                         fileName: "src/App.jsx",
-                        lineNumber: 54,
+                        lineNumber: 62,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _memberFormDefault.default), {}, void 0, false, {
                         fileName: "src/App.jsx",
-                        lineNumber: 55,
+                        lineNumber: 63,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _memberListDefault.default), {
                         onMembersLoaded: setMembers
                     }, void 0, false, {
                         fileName: "src/App.jsx",
-                        lineNumber: 56,
+                        lineNumber: 64,
                         columnNumber: 9
-                    }, this),
-                    " "
+                    }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/App.jsx",
-                lineNumber: 53,
+                lineNumber: 61,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -16213,7 +16220,7 @@ function App() {
                         children: "Uppgifter:"
                     }, void 0, false, {
                         fileName: "src/App.jsx",
-                        lineNumber: 60,
+                        lineNumber: 68,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _assignmentListDefault.default), {
@@ -16223,19 +16230,19 @@ function App() {
                         deleteAssignment: deleteAssignment
                     }, void 0, false, {
                         fileName: "src/App.jsx",
-                        lineNumber: 61,
+                        lineNumber: 69,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/App.jsx",
-                lineNumber: 59,
+                lineNumber: 67,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/App.jsx",
-        lineNumber: 47,
+        lineNumber: 55,
         columnNumber: 5
     }, this);
 }
@@ -34053,8 +34060,6 @@ var _reactDefault = parcelHelpers.interopDefault(_react);
 var _s = $RefreshSig$();
 function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssignment }) {
     _s();
-    const [editingId, setEditingId] = (0, _react.useState)(null);
-    const [editedAssignment, setEditedAssignment] = (0, _react.useState)({});
     const [filterMember, setFilterMember] = (0, _react.useState)("");
     const [filterCategory, setFilterCategory] = (0, _react.useState)("");
     const [sortField, setSortField] = (0, _react.useState)("createdAt");
@@ -34062,33 +34067,11 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
     const labelNew = "Ny";
     const labelOngoing = "P\xe5g\xe5ende";
     const labelDone = "F\xe4rdig";
-    const startEdit = (assignment)=>{
-        setEditingId(assignment.id);
-        setEditedAssignment({
-            ...assignment
-        });
-    };
-    const cancelEdit = ()=>{
-        setEditingId(null);
-        setEditedAssignment({});
-    };
-    const saveEdit = ()=>{
-        let updatedStatus = editedAssignment.status;
-        if (updatedStatus === labelNew && editedAssignment.assignedTo) updatedStatus = labelOngoing;
-        if (!editedAssignment.assignedTo || editedAssignment.assignedTo === "") updatedStatus = labelNew;
-        onUpdateAssignment(editingId, {
-            title: editedAssignment.title,
-            category: editedAssignment.category,
-            assignedTo: editedAssignment.assignedTo,
-            status: updatedStatus
-        });
-        cancelEdit();
-    };
     function CheckStatusColor(assignment) {
         if (assignment.status === labelNew) return "white";
-        else if (assignment.status === labelOngoing) return "yellow";
-        else if (assignment.status === labelDone) return "lightgreen";
-        else return "white";
+        if (assignment.status === labelOngoing) return "yellow";
+        if (assignment.status === labelDone) return "lightgreen";
+        return "white";
     }
     function RemoveAssignmentButton({ assignment }) {
         if (assignment.status === labelDone) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
@@ -34096,8 +34079,8 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
             children: "Radera"
         }, void 0, false, {
             fileName: "src/components/AssignmentList.jsx",
-            lineNumber: 63,
-            columnNumber: 16
+            lineNumber: 22,
+            columnNumber: 14
         }, this);
         return null;
     }
@@ -34114,15 +34097,15 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
                 children: "F\xe4rdig"
             }, void 0, false, {
                 fileName: "src/components/AssignmentList.jsx",
-                lineNumber: 74,
-                columnNumber: 12
+                lineNumber: 32,
+                columnNumber: 14
             }, this);
         }
         return null;
     }
     function AssignMemberButtons({ assignment }) {
-        if (assignment.assignedTo.toLowerCase() === "" || !assignment.assignedTo) {
-            const relevantMembers = members.filter((member)=>member.roles.some((role)=>role.toLowerCase() == assignment.category.toLowerCase()));
+        if (!assignment.assignedTo || assignment.assignedTo === "") {
+            const relevantMembers = members.filter((member)=>member.roles.some((role)=>role.toLowerCase() === assignment.category.toLowerCase()));
             const assignToMember = (memberId)=>{
                 onUpdateAssignment(assignment.id, {
                     ...assignment,
@@ -34136,8 +34119,8 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
                         children: "Tilldela till:"
                     }, void 0, false, {
                         fileName: "src/components/AssignmentList.jsx",
-                        lineNumber: 94,
-                        columnNumber: 13
+                        lineNumber: 53,
+                        columnNumber: 11
                     }, this),
                     relevantMembers.map((member)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
                             onClick: ()=>assignToMember(member.id),
@@ -34147,14 +34130,14 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
                             children: member.name
                         }, member.id, false, {
                             fileName: "src/components/AssignmentList.jsx",
-                            lineNumber: 96,
-                            columnNumber: 17
+                            lineNumber: 55,
+                            columnNumber: 13
                         }, this))
                 ]
             }, void 0, true, {
                 fileName: "src/components/AssignmentList.jsx",
-                lineNumber: 93,
-                columnNumber: 13
+                lineNumber: 52,
+                columnNumber: 9
             }, this);
         }
         return null;
@@ -34184,8 +34167,8 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
                     children: "Filtrera p\xe5 medlem: "
                 }, void 0, false, {
                     fileName: "src/components/AssignmentList.jsx",
-                    lineNumber: 129,
-                    columnNumber: 13
+                    lineNumber: 88,
+                    columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
                     value: filterMember,
@@ -34196,29 +34179,29 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
                             children: "Alla"
                         }, void 0, false, {
                             fileName: "src/components/AssignmentList.jsx",
-                            lineNumber: 131,
-                            columnNumber: 17
+                            lineNumber: 90,
+                            columnNumber: 11
                         }, this),
                         members.map((member)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
                                 value: member.id,
                                 children: member.name
                             }, member.id, false, {
                                 fileName: "src/components/AssignmentList.jsx",
-                                lineNumber: 133,
-                                columnNumber: 17
+                                lineNumber: 92,
+                                columnNumber: 13
                             }, this))
                     ]
                 }, void 0, true, {
                     fileName: "src/components/AssignmentList.jsx",
-                    lineNumber: 130,
-                    columnNumber: 13
+                    lineNumber: 89,
+                    columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
                     children: " Filtrera p\xe5 kategori: "
                 }, void 0, false, {
                     fileName: "src/components/AssignmentList.jsx",
-                    lineNumber: 137,
-                    columnNumber: 13
+                    lineNumber: 96,
+                    columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
                     value: filterCategory,
@@ -34229,45 +34212,45 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
                             children: "Alla"
                         }, void 0, false, {
                             fileName: "src/components/AssignmentList.jsx",
-                            lineNumber: 139,
-                            columnNumber: 17
+                            lineNumber: 98,
+                            columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
                             value: "UX",
                             children: "UX"
                         }, void 0, false, {
                             fileName: "src/components/AssignmentList.jsx",
-                            lineNumber: 140,
-                            columnNumber: 17
+                            lineNumber: 99,
+                            columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
                             value: "frontend",
                             children: "Frontend"
                         }, void 0, false, {
                             fileName: "src/components/AssignmentList.jsx",
-                            lineNumber: 141,
-                            columnNumber: 17
+                            lineNumber: 100,
+                            columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
                             value: "backend",
                             children: "Backend"
                         }, void 0, false, {
                             fileName: "src/components/AssignmentList.jsx",
-                            lineNumber: 142,
-                            columnNumber: 17
+                            lineNumber: 101,
+                            columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "src/components/AssignmentList.jsx",
-                    lineNumber: 138,
-                    columnNumber: 13
+                    lineNumber: 97,
+                    columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("label", {
                     children: " Sortera: "
                 }, void 0, false, {
                     fileName: "src/components/AssignmentList.jsx",
-                    lineNumber: 145,
-                    columnNumber: 13
+                    lineNumber: 104,
+                    columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
                     value: sortField,
@@ -34278,22 +34261,22 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
                             children: "Timestamp"
                         }, void 0, false, {
                             fileName: "src/components/AssignmentList.jsx",
-                            lineNumber: 147,
-                            columnNumber: 17
+                            lineNumber: 106,
+                            columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
                             value: "title",
                             children: "Titel"
                         }, void 0, false, {
                             fileName: "src/components/AssignmentList.jsx",
-                            lineNumber: 148,
-                            columnNumber: 17
+                            lineNumber: 107,
+                            columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "src/components/AssignmentList.jsx",
-                    lineNumber: 146,
-                    columnNumber: 13
+                    lineNumber: 105,
+                    columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
                     value: sortOrder,
@@ -34304,28 +34287,28 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
                             children: "Stigande (A\u2013\xd6 / \xc4ldst \u2192 Nyast)"
                         }, void 0, false, {
                             fileName: "src/components/AssignmentList.jsx",
-                            lineNumber: 152,
-                            columnNumber: 17
+                            lineNumber: 111,
+                            columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
                             value: "desc",
                             children: "Fallande (\xd6\u2013A / Nyast \u2192 \xc4ldst)"
                         }, void 0, false, {
                             fileName: "src/components/AssignmentList.jsx",
-                            lineNumber: 153,
-                            columnNumber: 17
+                            lineNumber: 112,
+                            columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "src/components/AssignmentList.jsx",
-                    lineNumber: 151,
-                    columnNumber: 13
+                    lineNumber: 110,
+                    columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "src/components/AssignmentList.jsx",
-            lineNumber: 128,
-            columnNumber: 17
+            lineNumber: 87,
+            columnNumber: 7
         }, this);
     }
     return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
@@ -34342,8 +34325,8 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
                 members: members
             }, void 0, false, {
                 fileName: "src/components/AssignmentList.jsx",
-                lineNumber: 161,
-                columnNumber: 5
+                lineNumber: 120,
+                columnNumber: 7
             }, this),
             [
                 labelNew,
@@ -34358,8 +34341,8 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
                             children: status
                         }, void 0, false, {
                             fileName: "src/components/AssignmentList.jsx",
-                            lineNumber: 182,
-                            columnNumber: 11
+                            lineNumber: 141,
+                            columnNumber: 13
                         }, this),
                         assignmentsForStatus.map((assignment)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
                                 style: {
@@ -34368,246 +34351,97 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
                                     padding: '10px',
                                     background: CheckStatusColor(assignment)
                                 },
-                                children: editingId === assignment.id ? /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
-                                    children: [
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("input", {
-                                            type: "text",
-                                            value: editedAssignment.title,
-                                            onChange: (e)=>setEditedAssignment({
-                                                    ...editedAssignment,
-                                                    title: e.target.value
-                                                })
-                                        }, void 0, false, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 195,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
-                                            value: editedAssignment.category,
-                                            onChange: (e)=>{
-                                                const newCategory = e.target.value;
-                                                const validMemberIds = members.filter((member)=>member.roles.some((role)=>role.toLowerCase() === newCategory.toLowerCase())).map((member)=>member.id);
-                                                setEditedAssignment({
-                                                    ...editedAssignment,
-                                                    category: newCategory,
-                                                    assignedTo: validMemberIds.includes(editedAssignment.assignedTo) ? editedAssignment.assignedTo : ""
-                                                });
-                                            },
-                                            children: [
-                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                                    value: "UX",
-                                                    children: "UX"
-                                                }, void 0, false, {
-                                                    fileName: "src/components/AssignmentList.jsx",
-                                                    lineNumber: 223,
-                                                    columnNumber: 21
-                                                }, this),
-                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                                    value: "frontend",
-                                                    children: "Frontend"
-                                                }, void 0, false, {
-                                                    fileName: "src/components/AssignmentList.jsx",
-                                                    lineNumber: 224,
-                                                    columnNumber: 21
-                                                }, this),
-                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                                    value: "backend",
-                                                    children: "Backend"
-                                                }, void 0, false, {
-                                                    fileName: "src/components/AssignmentList.jsx",
-                                                    lineNumber: 225,
-                                                    columnNumber: 21
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 202,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
-                                            value: editedAssignment.assignedTo,
-                                            onChange: (e)=>setEditedAssignment({
-                                                    ...editedAssignment,
-                                                    assignedTo: e.target.value
-                                                }),
-                                            children: [
-                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                                    value: "",
-                                                    children: "V\xe4lj medlem"
-                                                }, void 0, false, {
-                                                    fileName: "src/components/AssignmentList.jsx",
-                                                    lineNumber: 233,
-                                                    columnNumber: 21
-                                                }, this),
-                                                members.filter((member)=>member.roles.some((role)=>role.toLowerCase() === editedAssignment.category.toLowerCase())).map((member)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                                        value: member.id,
-                                                        children: member.name
-                                                    }, member.id, false, {
-                                                        fileName: "src/components/AssignmentList.jsx",
-                                                        lineNumber: 242,
-                                                        columnNumber: 25
-                                                    }, this))
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 227,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("select", {
-                                            value: editedAssignment.status,
-                                            onChange: (e)=>setEditedAssignment({
-                                                    ...editedAssignment,
-                                                    status: e.target.value
-                                                }),
-                                            children: [
-                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                                    value: labelNew,
-                                                    children: "Ny"
-                                                }, void 0, false, {
-                                                    fileName: "src/components/AssignmentList.jsx",
-                                                    lineNumber: 253,
-                                                    columnNumber: 21
-                                                }, this),
-                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                                    value: labelOngoing,
-                                                    children: "P\xe5g\xe5ende"
-                                                }, void 0, false, {
-                                                    fileName: "src/components/AssignmentList.jsx",
-                                                    lineNumber: 254,
-                                                    columnNumber: 21
-                                                }, this),
-                                                /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("option", {
-                                                    value: labelDone,
-                                                    children: "F\xe4rdig"
-                                                }, void 0, false, {
-                                                    fileName: "src/components/AssignmentList.jsx",
-                                                    lineNumber: 255,
-                                                    columnNumber: 21
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 247,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                                            onClick: saveEdit,
-                                            children: "Spara"
-                                        }, void 0, false, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 258,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                                            onClick: cancelEdit,
-                                            children: "Avbryt"
-                                        }, void 0, false, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 259,
-                                            columnNumber: 19
-                                        }, this)
-                                    ]
-                                }, void 0, true) : /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _jsxDevRuntime.Fragment), {
-                                    children: [
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
-                                            children: assignment.title
-                                        }, void 0, false, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 263,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                                            children: [
-                                                "Kategori: ",
-                                                assignment.category
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 264,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                                            children: [
-                                                "Tilldelad: ",
-                                                members.find((m)=>m.id === assignment.assignedTo)?.name || "Ingen"
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 265,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                                            children: [
-                                                "Status: ",
-                                                assignment.status
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 268,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
-                                            children: [
-                                                "Skapad: ",
-                                                new Date(assignment.createdAt).toLocaleString("sv-SE")
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 269,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(AssignMemberButtons, {
-                                            assignment: assignment
-                                        }, void 0, false, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 270,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("button", {
-                                            onClick: ()=>startEdit(assignment),
-                                            children: "Redigera"
-                                        }, void 0, false, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 271,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(RemoveAssignmentButton, {
-                                            assignment: assignment
-                                        }, void 0, false, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 272,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(MakeAssignmentDone, {
-                                            assignment: assignment,
-                                            onUpdateAssignment: onUpdateAssignment
-                                        }, void 0, false, {
-                                            fileName: "src/components/AssignmentList.jsx",
-                                            lineNumber: 273,
-                                            columnNumber: 19
-                                        }, this)
-                                    ]
-                                }, void 0, true)
-                            }, assignment.id, false, {
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("h3", {
+                                        children: assignment.title
+                                    }, void 0, false, {
+                                        fileName: "src/components/AssignmentList.jsx",
+                                        lineNumber: 152,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                        children: [
+                                            "Kategori: ",
+                                            assignment.category
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "src/components/AssignmentList.jsx",
+                                        lineNumber: 153,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                        children: [
+                                            "Tilldelad: ",
+                                            members.find((m)=>m.id === assignment.assignedTo)?.name || "Ingen"
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "src/components/AssignmentList.jsx",
+                                        lineNumber: 154,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                        children: [
+                                            "Status: ",
+                                            assignment.status
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "src/components/AssignmentList.jsx",
+                                        lineNumber: 157,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("p", {
+                                        children: [
+                                            "Skapad: ",
+                                            new Date(assignment.createdAt).toLocaleString("sv-SE")
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "src/components/AssignmentList.jsx",
+                                        lineNumber: 158,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(AssignMemberButtons, {
+                                        assignment: assignment
+                                    }, void 0, false, {
+                                        fileName: "src/components/AssignmentList.jsx",
+                                        lineNumber: 159,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(RemoveAssignmentButton, {
+                                        assignment: assignment
+                                    }, void 0, false, {
+                                        fileName: "src/components/AssignmentList.jsx",
+                                        lineNumber: 160,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)(MakeAssignmentDone, {
+                                        assignment: assignment,
+                                        onUpdateAssignment: onUpdateAssignment
+                                    }, void 0, false, {
+                                        fileName: "src/components/AssignmentList.jsx",
+                                        lineNumber: 161,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, assignment.id, true, {
                                 fileName: "src/components/AssignmentList.jsx",
-                                lineNumber: 184,
-                                columnNumber: 13
+                                lineNumber: 143,
+                                columnNumber: 15
                             }, this))
                     ]
                 }, status, true, {
                     fileName: "src/components/AssignmentList.jsx",
-                    lineNumber: 181,
-                    columnNumber: 9
+                    lineNumber: 140,
+                    columnNumber: 11
                 }, this);
             })
         ]
     }, void 0, true, {
         fileName: "src/components/AssignmentList.jsx",
-        lineNumber: 160,
-        columnNumber: 3
+        lineNumber: 119,
+        columnNumber: 5
     }, this);
 }
-_s(AssignmentList, "fgrFvLETtpqg20hR6m58YtqZamo=");
+_s(AssignmentList, "7PMbwDQlYz0z4l1FMNlwbWQw0KM=");
 _c = AssignmentList;
 exports.default = AssignmentList;
 var _c;
