@@ -10,6 +10,7 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
   const labelOngoing = "Pågående";
   const labelDone = "Färdig";
 
+  //Metod för att kolla vilken färg som div till assignment ska ha beroende på status på assignment
   function CheckStatusColor(assignment) {
     if (assignment.status === labelNew) return "white";
     if (assignment.status === labelOngoing) return "yellow";
@@ -17,6 +18,7 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
     return "white";
   }
 
+  //funktion för att ta bort en assignment, om status på assignment är "färdig" så syns knappen och kör deleteAssignment metoden med ID som input
   function RemoveAssignmentButton({ assignment }) {
     if (assignment.status === labelDone) {
       return <button onClick={() => deleteAssignment(assignment.id)}>Radera</button>;
@@ -24,6 +26,7 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
     return null;
   }
 
+  //Funktion för att uppdatera assignment från status "pågående" till status "färdig", skapar en kopia av nuvarande assignment och ändrar status och uppdaterar databasen
   function MakeAssignmentDone({ assignment, onUpdateAssignment }) {
     if (assignment.status === labelOngoing) {
       const markAsDone = () => {
@@ -34,12 +37,19 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
     return null;
   }
 
+  //funktion för att ta fram vilka medlemmar som har samma roll som assignment-kategorin. Om assignment.category och member.role är samma så skapas en knapp som kan köra metoden "assignToMember"
   function AssignMemberButtons({ assignment }) {
+    //om assignment inte är tilldelad till någon körs nedan
     if (!assignment.assignedTo || assignment.assignedTo === "") {
+
+        //member.roles är array med eventuella roller som [Frontend, Backend, UX]. 
+        // Här skapas ett objekt relevantMembers där man söker genom varje role i array, för varje role kollar den om role.toLowerCase() är lika med assignment.category.toLowerCase(). 
+        // Om minst en role är samma som assignment.category så returnerar den true, annars false. 
       const relevantMembers = members.filter(member =>
         member.roles.some(role => role.toLowerCase() === assignment.category.toLowerCase())
       );
 
+      //metod när man klickar på knappen, så uppdateras databasen med en ny tilldelad medlem
       const assignToMember = (memberId) => {
         onUpdateAssignment(assignment.id, {
           ...assignment,
@@ -48,6 +58,7 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
         });
       };
 
+      //Skriver ut knapp för varje medlem som har samma role som assignment-category
       return (
         <div>
           <p>Tilldela till:</p>
@@ -62,6 +73,7 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
     return null;
   }
 
+  //filtrering för assignments
   const filteredAndSortedAssignments = assignments
     .filter(assignment => {
       const matchesMember = !filterMember || assignment.assignedTo === filterMember;
@@ -82,6 +94,7 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
       return 0;
     });
 
+    //sortering 
   function SortingBar({ filterMember, setFilterMember, filterCategory, setFilterCategory, sortField, setSortField, sortOrder, setSortOrder, members }) {
     return (
       <div style={{ marginBottom: '20px' }}>
@@ -115,6 +128,7 @@ function AssignmentList({ assignments, members, onUpdateAssignment, deleteAssign
     );
   }
 
+  //utskrivningen för assignments layout
   return (
     <div>
       <SortingBar
