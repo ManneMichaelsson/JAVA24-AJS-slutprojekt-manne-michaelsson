@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "homepage": "https://mannemichaelsson.github.io/JAVA24-AJS-slutprojekt-manne-michaelsson/",
 "scripts": {
+  "start": "parcel serve index.html --public-url /JAVA24-AJS-slutprojekt-manne-michaelsson/",
   "build": "parcel build ./index.html --dist-dir dist --public-url /JAVA24-AJS-slutprojekt-manne-michaelsson/",
   "predeploy": "npm run build",
   "deploy": "gh-pages -d dist"

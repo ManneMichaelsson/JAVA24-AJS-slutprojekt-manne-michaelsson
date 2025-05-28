@@ -14,21 +14,28 @@ function App() {
 
   //hämta assignments från databsen
   useEffect(() => {
+    //referens till plats "assignments" i databasen
     const assignmentsRef = ref(database, 'assignments');
+    //lyssnar på förändring i databasen
     onValue(assignmentsRef, (snapshot) => {
+      //hämtar en snapshot av "assignments" i databsen och sparar i data
       const data = snapshot.val();
+      //gör om data till en array i grupp [ID, objeket i databasen], om data är tom så skapas en tom array
       const assignmentsList = data ? Object.entries(data).map(([id, val]) => ({ id, ...val })) : [];
+      //Uppdaterar state med listan så att de visas på hemsidan
       setAssignments(assignmentsList);
     });
   }, []);
 
+  //Metod för att lägga till en ny uppgift i databasen. 
   const handleAddAssignment = (assignment) => {
     const assignmentsRef = ref(database, 'assignments');
     push(assignmentsRef, assignment)
-      .then(() => console.log('Uppgift tillagd!'))
+      .then(() => console.log('Uppgift tillagd'))
       .catch(error => console.error('Fel vid tillägg:', error));
   };
 
+  //Metod för att uppdatera en uppgift i databasen. 
   const handleUpdateAssignment = (id, updatedFields) => {
     const assignmentRef = ref(database, `assignments/${id}`);
     update(assignmentRef, updatedFields)
@@ -36,6 +43,7 @@ function App() {
       .catch((error) => console.error("Fel vid uppdatering:", error));
   };
 
+  //tar bort en uppgift i databasen
   const deleteAssignment = (id) => {
     const assignmentRef = ref(database, `assignments/${id}`);
     remove(assignmentRef)
@@ -53,7 +61,7 @@ function App() {
       <div id="membersDiv">
         <h1>Lägg till medlem:</h1>
         <MemberForm />
-        <MemberList onMembersLoaded={setMembers} /> {/* 👈 Hämtar och sätter */}
+        <MemberList onMembersLoaded={setMembers} />
       </div>
 
       <div id="assignmentListDiv">

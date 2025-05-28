@@ -4,7 +4,7 @@ import { getDatabase } from "firebase/database";
 const firebaseConfig = {
   apiKey: "AIzaSyCdbOT5UMxIn204BD4RoBDCVl7uIkiBpEs",
   authDomain: "scrum-board-b2604.firebaseapp.com",
-  databaseURL: "https://scrum-board-b2604-default-rtdb.europe-west1.firebasedatabase.app/", // viktigt!
+  databaseURL: "https://scrum-board-b2604-default-rtdb.europe-west1.firebasedatabase.app/",
   projectId: "scrum-board-b2604",
   storageBucket: "scrum-board-b2604.appspot.com",
   messagingSenderId: "1095617230048",
